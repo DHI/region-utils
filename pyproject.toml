@@ -1,6 +1,5 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools"]
 
 [project]
 name = "region_utils"
