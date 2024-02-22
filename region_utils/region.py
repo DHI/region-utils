@@ -11,7 +11,7 @@ from shapely import Polygon
 from shapely.ops import transform
 from sqlalchemy import create_engine
 
-import utils
+from .utils import download_blob
 
 
 class Region:
@@ -84,7 +84,7 @@ class Region:
         blob_connection_str: str | None = None,
     ):
         if blob_connection_str:
-            raster_path = utils.download_blob(raster_path, blob_connection_str)
+            raster_path = download_blob(raster_path, blob_connection_str)
 
         with rst.open(raster_path) as src:
             b = src.bounds
