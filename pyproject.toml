@@ -3,16 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "my_library"
+name = "region_utils"
 version = "0.0.1"
-dependencies = [
-    "numpy"
-]
+dynamic = ["dependencies"]
 
 authors = [
-  { name="First Last", email="initials@dhigroup.com" },
+  { name="Paul Daniel", email="pada@dhigroup.com" },
 ]
-description = "Useful library"
+description = "This library provides several useful functions for handling geometries and polygons representing regions."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -24,9 +22,18 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest","ruff","black","mkdocs","mkdocstrings[python]", "mkdocs-material"]
+dev = ["pytest","ruff","ipykernel","black","mkdocs","mkdocstrings[python]", "mkdocs-material"]
 test= ["pytest"]
 
 [project.urls]
-"Homepage" = "https://github.com/DHI/my_library"
-"Bug Tracker" = "https://github.com/DHI/my_library/issues"
+"Homepage" = "https://github.com/DHI/region-utils"
+"Bug Tracker" = "https://github.com/DHI/region-utils/issues"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages (["."] by default)
+include = ["region-utils*"]  # package names should match these glob patterns (["*"] by default)
+exclude = []  # exclude packages matching these glob patterns (empty by default)
+namespaces = false  # to disable scanning PEP 420 namespaces (true by default)

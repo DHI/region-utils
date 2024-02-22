@@ -1,12 +1,3 @@
-# my_library: Template Python repository
+# region-utils: Region functionality
 
-This repository serves as a template for creating a Python library
-
-## How do I use this?
-
-1. Create a new repository in GitHub with this repo as a starting point
-    ![](images/new_repo.png)
-
-2. Change all occurences of `my_library` to match the name of your new library
-
-3. Consider if the [license](LICENSE) should be modified.
+This library provides several useful functions for handling geometries and polygons representing regions.

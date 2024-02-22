@@ -1,0 +1,10 @@
+rasterio
+geopandas
+pyproj
+ipykernel
+azure-core 
+azure-storage-blob
+rioxarray
+psycopg2
+shapely
+sqlalchemy
