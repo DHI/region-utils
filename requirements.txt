@@ -5,6 +5,6 @@ ipykernel
 azure-core 
 azure-storage-blob
 rioxarray
-psycopg2
+psycopg2-binary
 shapely
 sqlalchemy
