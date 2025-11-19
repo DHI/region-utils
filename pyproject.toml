@@ -4,7 +4,6 @@ requires = ["setuptools"]
 [project]
 name = "region_utils"
 version = "0.0.1"
-dynamic = ["dependencies"]
 
 authors = [
   { name="Paul Daniel", email="pada@dhigroup.com" },
