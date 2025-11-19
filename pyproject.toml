@@ -19,6 +19,17 @@ classifiers = [
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering",
 ]
+dependencies = [
+    "rasterio",
+    "geopandas",
+    "pyproj",
+    "azure-core",
+    "azure-storage-blob",
+    "rioxarray",
+    "psycopg2-binary",
+    "shapely",
+    "sqlalchemy",
+]
 
 [project.optional-dependencies]
 dev = ["pytest","ruff","ipykernel","black","mkdocs","mkdocstrings[python]", "mkdocs-material"]
@@ -27,9 +38,6 @@ test= ["pytest"]
 [project.urls]
 "Homepage" = "https://github.com/DHI/region-utils"
 "Bug Tracker" = "https://github.com/DHI/region-utils/issues"
-
-[tool.setuptools.dynamic]
-dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages.find]
 where = ["."]  # list of folders that contain the packages (["."] by default)
