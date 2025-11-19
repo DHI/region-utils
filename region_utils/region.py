@@ -9,8 +9,7 @@ import rasterio as rst
 import shapely
 from shapely import Polygon
 from shapely.ops import transform
-import psycopg2
-from psycopg2.extras import RealDictCursor
+from sqlalchemy import create_engine, text
 
 from .utils import download_blob
 
@@ -66,36 +65,36 @@ class Region:
         geometry_column_name: str = "geometry",
         region_name_column_name: Optional[str] = None,
     ):
-        # Open raw psycopg2 connection (no pooling, no leaking)
-        conn = psycopg2.connect(connection_string)
+        # Create SQLAlchemy engine
+        engine = create_engine(connection_string)
 
         try:
-            sql = f"""
-                SELECT *
-                FROM {table_name}
-                WHERE {id_column_name} = %s
-            """
+            sql = f"SELECT * FROM {table_name} WHERE {id_column_name} = :id"
 
-            df = gpd.read_postgis(
-                sql,
-                conn,
-                geom_col=geometry_column_name,
-                params=[id],
-            )
+            # Use engine.connect() context manager
+            with engine.connect() as conn:
+                df = gpd.read_postgis(
+                    text(sql),
+                    conn,
+                    geom_col=geometry_column_name,
+                    params={"id": id},
+                )
+
+            if df.empty:
+                raise ValueError(f"No region found with id={id} in {table_name}")
+
+            if region_name_column_name:
+                return cls.from_polygon(
+                    df.geometry.iloc[0],
+                    df.crs,
+                    name=df[region_name_column_name].iloc[0],
+                )
+
+            return cls.from_polygon(df.geometry.iloc[0], df.crs)
+
         finally:
-            conn.close()
-
-        if df.empty:
-            raise ValueError(f"No region found with id={id} in {table_name}")
-
-        if region_name_column_name:
-            return cls.from_polygon(
-                df.geometry[0],
-                df.crs,
-                name=df[region_name_column_name].iloc[0],
-            )
-
-        return cls.from_polygon(df.geometry[0], df.crs)
+            # Dispose the engine to close all connections
+            engine.dispose()
 
     @classmethod
     def from_raster_bounds(
