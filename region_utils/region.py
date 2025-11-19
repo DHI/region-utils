@@ -9,7 +9,8 @@ import rasterio as rst
 import shapely
 from shapely import Polygon
 from shapely.ops import transform
-from sqlalchemy import create_engine
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 from .utils import download_blob
 
@@ -65,17 +66,36 @@ class Region:
         geometry_column_name: str = "geometry",
         region_name_column_name: Optional[str] = None,
     ):
-        engine = create_engine(connection_string)
-        df = gpd.read_postgis(
-            f"SELECT * FROM {table_name} WHERE {id_column_name} = {id}",
-            engine,
-            geom_col=geometry_column_name,
-        )
-        if not region_name_column_name:
-            return cls.from_polygon(df.geometry[0], df.crs)
-        return cls.from_polygon(
-            df.geometry[0], df.crs, name=df[region_name_column_name][0]
-        )
+        # Open raw psycopg2 connection (no pooling, no leaking)
+        conn = psycopg2.connect(connection_string)
+
+        try:
+            sql = f"""
+                SELECT *
+                FROM {table_name}
+                WHERE {id_column_name} = %s
+            """
+
+            df = gpd.read_postgis(
+                sql,
+                conn,
+                geom_col=geometry_column_name,
+                params=[id],
+            )
+        finally:
+            conn.close()
+
+        if df.empty:
+            raise ValueError(f"No region found with id={id} in {table_name}")
+
+        if region_name_column_name:
+            return cls.from_polygon(
+                df.geometry[0],
+                df.crs,
+                name=df[region_name_column_name].iloc[0],
+            )
+
+        return cls.from_polygon(df.geometry[0], df.crs)
 
     @classmethod
     def from_raster_bounds(
